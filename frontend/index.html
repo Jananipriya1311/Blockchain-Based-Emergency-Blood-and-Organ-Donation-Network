@@ -1,19 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Frontend</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donation Frontend</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+  </style>
 </head>
 <body>
-  <app-root></app-root>
+  <h1>Donor List</h1>
+  <table id="donors-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Blood Type</th>
+        <th>Organ Type</th>
+        <th>Availability</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h1>Donation Requests</h1>
+  <table id="requests-table">
+    <thead>
+      <tr>
+        <th>Request ID</th>
+        <th>Donor ID</th>
+        <th>Hospital ID</th>
+        <th>Organ Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchDonors() {
+      const res = await fetch("/api/donors");
+      const donors = await res.json();
+      const tbody = document.querySelector("#donors-table tbody");
+      tbody.innerHTML = "";
+      donors.forEach(d => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${d.ID}</td>
+          <td>${d.Name}</td>
+          <td>${d.BloodType}</td>
+          <td>${d.OrganType}</td>
+          <td>${d.Availability}</td>
+          <td>${d.ContactInfo}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function fetchRequests() {
+      const res = await fetch("/api/requests");
+      const requests = await res.json();
+      const tbody = document.querySelector("#requests-table tbody");
+      tbody.innerHTML = "";
+      requests.forEach(r => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${r.RequestID}</td>
+          <td>${r.DonorID}</td>
+          <td>${r.HospitalID}</td>
+          <td>${r.OrganType}</td>
+          <td>${r.Status}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Fetch data on page load
+    fetchDonors();
+    fetchRequests();
+  </script>
 </body>
 </html>
