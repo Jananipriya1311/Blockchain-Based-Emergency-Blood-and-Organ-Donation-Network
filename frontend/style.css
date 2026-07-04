@@ -1,0 +1,138 @@
+/* ===== Global Styles ===== */
+body {
+  font-family: "Poppins", Arial, sans-serif;
+  background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+  color: #333;
+  margin: 0;
+  padding: 20px;
+}
+
+/* ===== Header ===== */
+h1 {
+  text-align: center;
+  color: #b91c1c;
+  font-size: 32px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+/* ===== Section Headings ===== */
+h2 {
+  color: #be185d;
+  border-left: 5px solid #ec4899;
+  padding-left: 10px;
+  margin-top: 40px;
+  font-size: 22px;
+}
+
+/* ===== Buttons ===== */
+button {
+  background: linear-gradient(90deg, #ec4899, #f472b6);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.3);
+}
+
+button:hover {
+  background: linear-gradient(90deg, #f472b6, #ec4899);
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(236, 72, 153, 0.4);
+}
+
+button:disabled {
+  background: #f9a8d4;
+  cursor: not-allowed;
+}
+
+/* ===== Inputs ===== */
+input {
+  padding: 8px;
+  margin: 5px;
+  border: 1px solid #f9a8d4;
+  border-radius: 6px;
+  width: 180px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: all 0.2s;
+}
+
+input:focus {
+  border-color: #ec4899;
+  box-shadow: 0 0 5px rgba(236, 72, 153, 0.5);
+  outline: none;
+}
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(236, 72, 153, 0.3);
+}
+
+th, td {
+  border: 1px solid #fbcfe8;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background: linear-gradient(90deg, #f9a8d4, #fbcfe8);
+  color: #831843;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #fdf2f8;
+}
+
+tr:hover {
+  background-color: #fce7f3;
+}
+
+/* ===== Container Styling ===== */
+h2 + input,
+h2 + div {
+  margin-top: 10px;
+}
+
+#output {
+  margin-top: 15px;
+}
+
+/* ===== Alert Animation ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.alert {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  table, th, td {
+    font-size: 12px;
+  }
+
+  input {
+    width: 100%;
+    display: block;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 5px;
+  }
+}

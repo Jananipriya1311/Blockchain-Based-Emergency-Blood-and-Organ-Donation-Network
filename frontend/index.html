@@ -1,96 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Donation Frontend</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #999;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
-    }
-  </style>
+  <title>Donation DApp</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Donor List</h1>
-  <table id="donors-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Blood Type</th>
-        <th>Organ Type</th>
-        <th>Availability</th>
-        <th>Contact</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <!-- Main header styled via CSS -->
+  <h1>Blockchain-based Emergency Blood & Organ Donation Network</h1>
 
-  <h1>Donation Requests</h1>
-  <table id="requests-table">
-    <thead>
-      <tr>
-        <th>Request ID</th>
-        <th>Donor ID</th>
-        <th>Hospital ID</th>
-        <th>Organ Type</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div class="container">
+    <h2>View Data</h2>
+    <button onclick="fetchData('donors')">Show Donors</button>
+    <button onclick="fetchData('hospitals')">Show Hospitals</button>
+    <button onclick="fetchData('requests')">Show Donation Requests</button>
+    <div id="output"></div>
+
+    <h2>Add Donor</h2>
+    <input id="d_id" placeholder="ID">
+    <input id="d_name" placeholder="Name">
+    <input id="d_blood" placeholder="BloodType">
+    <input id="d_organ" placeholder="OrganType">
+    <input id="d_avail" placeholder="Availability">
+    <input id="d_contact" placeholder="Contact">
+    <input id="d_date" placeholder="LastDonationDate">
+    <button onclick="addDonor()">Add Donor</button>
+
+    <h2>Add Hospital</h2>
+    <input id="h_id" placeholder="ID">
+    <input id="h_name" placeholder="Name">
+    <input id="h_loc" placeholder="Location">
+    <button onclick="addHospital()">Add Hospital</button>
+
+    <h2>Add Donation Request</h2>
+    <input id="r_id" placeholder="RequestID">
+    <input id="r_donor" placeholder="DonorID">
+    <input id="r_hosp" placeholder="HospitalID">
+    <input id="r_organ" placeholder="OrganType">
+    <button onclick="addRequest()">Add Request</button>
+  </div>
 
   <script>
-    async function fetchDonors() {
-      const res = await fetch("/api/donors");
-      const donors = await res.json();
-      const tbody = document.querySelector("#donors-table tbody");
-      tbody.innerHTML = "";
-      donors.forEach(d => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${d.ID}</td>
-          <td>${d.Name}</td>
-          <td>${d.BloodType}</td>
-          <td>${d.OrganType}</td>
-          <td>${d.Availability}</td>
-          <td>${d.ContactInfo}</td>
-        `;
-        tbody.appendChild(row);
-      });
+    async function fetchData(type) {
+      const res = await fetch(`/${type}`);
+      const data = await res.json();
+      displayTable(type, data);
     }
 
-    async function fetchRequests() {
-      const res = await fetch("/api/requests");
-      const requests = await res.json();
-      const tbody = document.querySelector("#requests-table tbody");
-      tbody.innerHTML = "";
-      requests.forEach(r => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${r.RequestID}</td>
-          <td>${r.DonorID}</td>
-          <td>${r.HospitalID}</td>
-          <td>${r.OrganType}</td>
-          <td>${r.Status}</td>
-        `;
-        tbody.appendChild(row);
+    function displayTable(type, data) {
+      let html = '<table><thead><tr>';
+      if (type === 'donors') {
+        html += '<th>ID</th><th>Name</th><th>BloodType</th><th>OrganType</th><th>Availability</th><th>Contact</th><th>LastDonationDate</th>';
+      } else if (type === 'hospitals') {
+        html += '<th>ID</th><th>Name</th><th>Location</th>';
+      } else if (type === 'requests') {
+        html += '<th>RequestID</th><th>DonorID</th><th>HospitalID</th><th>OrganType</th><th>Status</th><th>Action</th>';
+      }
+      html += '</tr></thead><tbody>';
+
+      data.forEach(item => {
+        html += '<tr>';
+        for (const key in item) {
+          if (type === 'hospitals' && key === 'ValidatedRequests') continue;
+          html += `<td>${item[key]}</td>`;
+        }
+        if (type === 'requests') {
+          if (item.Status === 'Pending') {
+            html += `<td><button class="accept-btn" onclick="acceptRequest('${item.RequestID}')">Accept</button></td>`;
+          } else {
+            html += '<td>Approved</td>';
+          }
+        }
+        html += '</tr>';
       });
+
+      html += '</tbody></table>';
+      document.getElementById('output').innerHTML = html;
     }
 
-    // Fetch data on page load
-    fetchDonors();
-    fetchRequests();
+    async function addDonor() {
+      const body = {
+        id: d_id.value, name: d_name.value, bloodType: d_blood.value,
+        organType: d_organ.value, availability: d_avail.value,
+        contact: d_contact.value, lastDonationDate: d_date.value
+      };
+      await fetch('/add-donor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      alert('Donor added!');
+      fetchData('donors');
+    }
+
+    async function addHospital() {
+      const body = { id: h_id.value, name: h_name.value, location: h_loc.value };
+      await fetch('/add-hospital', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      alert('Hospital added!');
+      fetchData('hospitals');
+    }
+
+    async function addRequest() {
+      const body = { requestID: r_id.value, donorID: r_donor.value, hospitalID: r_hosp.value, organType: r_organ.value };
+      await fetch('/add-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      alert('Donation Request added!');
+      fetchData('requests');
+    }
+
+    async function acceptRequest(requestID) {
+      const body = { requestID, status: 'Approved' };
+      const res = await fetch('/update-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (res.ok) {
+        alert('Request Approved!');
+        fetchData('requests');
+      } else {
+        alert('Failed to approve request.');
+      }
+    }
   </script>
 </body>
 </html>
